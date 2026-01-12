@@ -1,0 +1,58 @@
+name: Update Public Release
+
+on:
+  repository_dispatch:
+    types: [new-installer-release]
+
+jobs:
+  publish-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Public Repo
+        uses: actions/checkout@v4
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.event.client_payload.version }}
+          name: Release v${{ github.event.client_payload.version }}
+          body: |
+            ## What's New
+            ${{ github.event.client_payload.notes }}
+            
+            ## LaserControl application v${{ github.event.client_payload.version }}
+            
+            Installers for this version have been generated and are ready for download.
+            
+            ### Installation Instructions
+            * **Windows**: Download and run the `.msi` installer.
+            * **macOS**: Download and run the `.pkg` installer.
+            * **Linux**: Install the `.deb` package using `sudo apt install ./LaserControl-v${{ github.event.client_payload.version }}_amd64.deb`.
+            *(Note: Use the `./` prefix and path to the downloaded **deb** file when installing with apt)*
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update release.json metadata
+        run: |
+          VERSION="${{ github.event.client_payload.version }}"
+          NOTES="${{ github.event.client_payload.notes }}"
+          
+          # Generate the JSON file that the JavaFX app will poll
+          cat <<EOF > release.json
+          {
+            "version": "$VERSION",
+            "notes": ${{ toJson(github.event.client_payload.notes) }},
+            "updated_at": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          }
+          EOF
+          
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add release.json
+          git commit -m "Update release metadata to v$VERSION" || echo "No changes"
+          git push
