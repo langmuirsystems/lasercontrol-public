@@ -1,5 +1,8 @@
 {
   "version": "25.0.1",
-  "notes": "First public release",
-  "updated_at": "2026-01-13T21:25:56Z"
+  "type": "PATCH",
+  "releaseNotes": "https://github.com/langmuirsystems/lasercontrol-public/releases/tag/v25.0.1",
+  "windowsInstallerUrl": "https://github.com/langmuirsystems/lasercontrol-public/releases/download/v25.0.1/lasercontrol-25.0.1.msi",
+  "macInstallerUrl": "https://github.com/langmuirsystems/lasercontrol-public/releases/download/v25.0.1/lasercontrol-25.0.1.pkg",
+  "linuxInstallerUrl": "https://github.com/langmuirsystems/lasercontrol-public/releases/download/v25.0.1/lasercontrol-25.0.1.deb"
 }
