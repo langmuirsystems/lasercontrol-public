@@ -39,20 +39,39 @@ jobs:
 
       - name: Update release.json metadata
         run: |
-          VERSION="${{ github.event.client_payload.version }}"
-          NOTES="${{ github.event.client_payload.notes }}"
+          NEW_VERSION="${{ github.event.client_payload.version }}"
           
-          # Generate the JSON file that the JavaFX app will poll
+          if [ -f release.json ]; then
+            OLD_VERSION=$(jq -r '.version' release.json)
+          else
+            OLD_VERSION="0.0.0"
+          fi
+
+          IFS='.' read -r o1 o2 o3 <<< "$OLD_VERSION"
+          IFS='.' read -r n1 n2 n3 <<< "$NEW_VERSION"
+          
+          if [ "$n1" -gt "$o1" ]; then TYPE="MAJOR"
+          elif [ "$n2" -gt "$o2" ]; then TYPE="MINOR"
+          else TYPE="PATCH"; fi
+
+          # Construct URLs for the public repository release assets
+          BASE_URL="https://github.com/${{ github.repository }}/releases/download/v$NEW_VERSION"
+          
+          # Adjust these filenames to match exactly what is uploaded to releases.
+          WIN_URL="$BASE_URL/lasercontrol-$NEW_VERSION.msi"
+          MAC_URL="$BASE_URL/lasercontrol-$NEW_VERSION.pkg"
+          LINUX_URL="$BASE_URL/lasercontrol-$NEW_VERSION.deb"
+          NOTES_URL="https://github.com/${{ github.repository }}/releases/tag/v$NEW_VERSION"
+
           cat <<EOF > release.json
           {
-            "version": "$VERSION",
-            "notes": ${{ toJson(github.event.client_payload.notes) }},
-            "updated_at": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            "version": "$NEW_VERSION",
+            "type": "$TYPE",
+            "releaseNotes": "$NOTES_URL",
+            "windowsInstallerUrl": "$WIN_URL",
+            "macInstallerUrl": "$MAC_URL",
+            "linuxInstallerUrl": "$LINUX_URL"
           }
           EOF
           
           git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add release.json
-          git commit -m "Update release metadata to v$VERSION" || echo "No changes"
-          git push
