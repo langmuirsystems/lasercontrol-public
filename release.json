@@ -4,5 +4,5 @@
   "releaseNotes": "https://github.com/langmuirsystems/lasercontrol-public/releases/tag/v25.0.2",
   "windowsInstallerUrl": "https://github.com/langmuirsystems/lasercontrol-public/releases/download/v25.0.2/lasercontrol-25.0.2.msi",
   "macInstallerUrl": "https://github.com/langmuirsystems/lasercontrol-public/releases/download/v25.0.2/lasercontrol-25.0.2.pkg",
-  "linuxInstallerUrl": "https://github.com/langmuirsystems/lasercontrol-public/releases/download/v25.0.2/lasercontrol-25.0.2.deb"
+  "linuxInstallerUrl": "https://github.com/langmuirsystems/lasercontrol-public/releases/download/v25.0.2/lasercontrol_25.0.2_amd64.deb"
 }
