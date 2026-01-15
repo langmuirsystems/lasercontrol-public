@@ -39,33 +39,34 @@ jobs:
 
       - name: Update release.json metadata
         run: |
-          NEW_VERSION="${{ github.event.client_payload.version }}"
+          VERSION="${{ github.event.client_payload.version }}"
           
+          # 1. Fetch the actual release data from GitHub API to get real asset URLs
+          # This ensures we get the exact filenames (including _amd64, etc.)
+          RELEASE_DATA=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/tags/v$VERSION")
+
+          # 2. Extract specific URLs using jq filters
+          WIN_URL=$(echo "$RELEASE_DATA" | jq -r '.assets[] | select(.name | endswith(".msi")) | .browser_download_url')
+          MAC_URL=$(echo "$RELEASE_DATA" | jq -r '.assets[] | select(.name | endswith(".pkg")) | .browser_download_url')
+          LINUX_URL=$(echo "$RELEASE_DATA" | jq -r '.assets[] | select(.name | endswith(".deb")) | .browser_download_url')
+          NOTES_URL="https://github.com/${{ github.repository }}/releases/tag/v$VERSION"
+
+          # 3. Calculate ReleaseType (same as before)
           if [ -f release.json ]; then
-            OLD_VERSION=$(jq -r '.version' release.json)
+            OLD_VERSION=$(jq -r '.version // "0.0.0"' release.json)
           else
             OLD_VERSION="0.0.0"
           fi
-
+          
           IFS='.' read -r o1 o2 o3 <<< "$OLD_VERSION"
-          IFS='.' read -r n1 n2 n3 <<< "$NEW_VERSION"
-          
-          if [ "$n1" -gt "$o1" ]; then TYPE="MAJOR"
-          elif [ "$n2" -gt "$o2" ]; then TYPE="MINOR"
-          else TYPE="PATCH"; fi
+          IFS='.' read -r n1 n2 n3 <<< "$VERSION"
+          if [ "$n1" -gt "$o1" ]; then TYPE="MAJOR"; elif [ "$n2" -gt "$o2" ]; then TYPE="MINOR"; else TYPE="PATCH"; fi
 
-          # Construct URLs for the public repository release assets
-          BASE_URL="https://github.com/${{ github.repository }}/releases/download/v$NEW_VERSION"
-          
-          # Adjust these filenames to match exactly what is uploaded to releases.
-          WIN_URL="$BASE_URL/lasercontrol-$NEW_VERSION.msi"
-          MAC_URL="$BASE_URL/lasercontrol-$NEW_VERSION.pkg"
-          LINUX_URL="$BASE_URL/lasercontrol-$NEW_VERSION.deb"
-          NOTES_URL="https://github.com/${{ github.repository }}/releases/tag/v$NEW_VERSION"
-
+          # 4. Generate the SoftwareRelease JSON with dynamic URLs
           cat <<EOF > release.json
           {
-            "version": "$NEW_VERSION",
+            "version": "$VERSION",
             "type": "$TYPE",
             "releaseNotes": "$NOTES_URL",
             "windowsInstallerUrl": "$WIN_URL",
@@ -77,6 +78,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add release.json
-          # Commit only if there are changes; '|| true' ensures the workflow continues if no changes
-          git commit -m "Update release metadata to v$NEW_VERSION" || echo "No version change detected"
+          git commit -m "Update release metadata to v$VERSION" || echo "No changes"
           git push
