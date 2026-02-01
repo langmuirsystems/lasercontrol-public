@@ -30,7 +30,7 @@ jobs:
             ### Installation Instructions
             * **Windows**: Download and run the `.msi` installer.
             * **macOS**: Download and run the `.pkg` installer.
-            * **Linux**: Install the `.deb` package using `sudo apt install ./LaserControl-v${{ github.event.client_payload.version }}_amd64.deb`.
+            * **Linux**: Install the `.deb` package using `sudo apt install ./lasercontrol-v${{ github.event.client_payload.version }}_amd64.deb`.
             *(Note: Use the `./` prefix and path to the downloaded **deb** file when installing with apt)*
           draft: false
           prerelease: false
