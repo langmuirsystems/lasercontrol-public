@@ -1,6 +1,6 @@
 {
   "version": "26.1.3",
-  "type": "MAJOR",
+  "type": "PATCH",
   "releaseNotes": "https://github.com/langmuirsystems/lasercontrol-public/releases/tag/v26.1.3",
   "windowsInstallerUrl": "",
   "macInstallerUrl": "",
