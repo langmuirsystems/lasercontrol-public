@@ -1,8 +1,8 @@
 {
-  "version": "26.1.3",
+  "version": "26.1.4",
   "type": "PATCH",
-  "releaseNotes": "https://github.com/langmuirsystems/lasercontrol-public/releases/tag/v26.1.3",
-  "windowsInstallerUrl": "https://github.com/langmuirsystems/lasercontrol-public/releases/download/v26.1.3/LaserControl-26.1.3.msi",
-  "macInstallerUrl": "https://github.com/langmuirsystems/lasercontrol-public/releases/download/v26.1.3/LaserControl-26.1.3.pkg",
-  "linuxInstallerUrl": "https://github.com/langmuirsystems/lasercontrol-public/releases/download/v26.1.3/lasercontrol_26.1.3_amd64.deb"
+  "releaseNotes": "https://github.com/langmuirsystems/lasercontrol-public/releases/tag/v26.1.4",
+  "windowsInstallerUrl": "https://github.com/langmuirsystems/lasercontrol-public/releases/download/v26.1.4/LaserControl-26.1.4.msi",
+  "macInstallerUrl": "https://github.com/langmuirsystems/lasercontrol-public/releases/download/v26.1.4/LaserControl-26.1.4.pkg",
+  "linuxInstallerUrl": "https://github.com/langmuirsystems/lasercontrol-public/releases/download/v26.1.4/lasercontrol_26.1.4_amd64.deb"
 }
